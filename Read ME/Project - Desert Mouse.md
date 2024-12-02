@@ -5,7 +5,6 @@ Status: Done
 Priority: P 1
 Tags: IoT, Microcontollers, Opensource
 Summary: The "Desert Mouse" project enables control of an ESP32 circuit via voice commands through a WebSocket connection. It includes a structured folder layout for the code, instructions for running the ESP32 and website, and details on using ngrok for secure access. Key steps involve configuring Wi-Fi credentials, setting up necessary libraries, and ensuring both the ESP32 and website are on the same network for successful communication. Troubleshooting tips are provided for common connection issues.
-Project: Micro Processors (https://www.notion.so/Micro-Processors-11a6163280d280a99fd9ce2f7b5ddd99?pvs=21)
 
 # Operation: Desert Mouse
 
