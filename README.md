@@ -75,11 +75,10 @@ This project allows you to control an ESP32 circuit through WebSocket commands s
 
 1. you will then have something like this:
 
-`Available on: http://x.x.x.x:8080`
-
-              `http://x.x.x.x:8080`
-
-`Hit CTRL-C to stop the server`
+`Available on: 
+http://x.x.x.x:8080
+http://x.x.x.x:8080
+Hit CTRL-C to stop the server`
 
 1. Depending on your website port you need to modify your website address in the `ngrok.yml` file. (in this case its `8080`).
 
