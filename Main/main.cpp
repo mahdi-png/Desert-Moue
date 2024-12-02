@@ -2,8 +2,8 @@
 #include <WebSocketsServer.h>
 
 // Wi-Fi credentials
-const char* ssid = "MDtri_2";
-const char* password = "GoneFishingForAWhile//";
+const char* ssid = "-----";
+const char* password = "-----";
 
 // WebSocket server on port 81
 WebSocketsServer webSocket = WebSocketsServer(81);

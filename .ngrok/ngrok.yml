@@ -5,5 +5,5 @@ tunnels:
     addr: 8080 
     proto: http
   websocket:
-    addr: 192.168.1.102:81
+    addr: xxx.xxx.x.x:81
     proto: http

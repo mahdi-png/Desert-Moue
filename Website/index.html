@@ -257,9 +257,9 @@
         const recognizedTextElement = document.getElementById("recognizedText");
         const commandElement = document.getElementById("command");
         const textCommandInput = document.getElementById("textCommandInput");
-
+/*-----------------------------------------------------------------------------------------------------------------------*/
         connectButton.addEventListener("click", () => {
-            websocket = new WebSocket("wss://8ae2-2a01-5ec0-d000-e460-9043-9346-d577-8a17.ngrok-free.app");
+            websocket = new WebSocket("wss://123abc.ngrok-free.app");
             websocket.onopen = () => {
                 statusElement.textContent = "Status: Connected";
             };
@@ -326,4 +326,3 @@
     </script>
 </body>
 </html>
-
