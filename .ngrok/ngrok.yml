@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 2o4yf2BrPQQGuXwZrpuVdNuGtJZ_2q7AEt9poDzDrWHUYzdkW
+tunnels:
+  website:
+    addr: 8080 
+    proto: http
+  websocket:
+    addr: 192.168.1.102:81
+    proto: http

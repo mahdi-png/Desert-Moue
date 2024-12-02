@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Control</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1117; /* Dark background */
+            color: #c9d1d9; /* Light text */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #58a6ff; /* Chrome accent */
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        h2 {
+            color: #79c0ff; /* Slightly lighter chrome accent */
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 5px 0;
+            font-size: 16px;
+            opacity: 0;
+            animation: fadeInText 0.4s ease-out forwards;
+            animation-delay: 0.4s;
+        }
+
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+
+        ul li {
+            margin: 5px 0;
+        }
+
+        /* Button styles */
+        button, input[type="text"], #sendButton {
+            background-color: #21262d; /* Button background */
+            color: #c9d1d9; /* Button text */
+            border: 1px solid #30363d; /* Subtle border */
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s ease, background-color 0.3s;
+        }
+
+        button:hover, input[type="text"]:hover, #sendButton:hover {
+            background-color: #30363d; /* Darker hover background */
+            color: #58a6ff; /* Chrome accent text */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        input[type="text"] {
+            width: 300px;
+            text-align: center;
+        }
+
+        #connectButton, #voiceCommandButton {
+            margin: 10px 5px;
+        }
+
+        /* Section styles */
+        #textCommandSection {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #30363d; /* Subtle border */
+            border-radius: 8px;
+            background-color: #161b22; /* Slightly darker section */
+            width: 80%;
+            max-width: 500px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 0.6s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+        #guideSection {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #30363d; /* Subtle border */
+            border-radius: 8px;
+            background-color: #161b22; /* Slightly darker section */
+            width: 80%;
+            max-width: 550px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 0.6s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+
+        #comingSoon {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #30363d; /* Subtle border */
+            border-radius: 8px;
+            background-color: #161b22; /* Slightly darker section */
+            width: 80%;
+            max-width: 350px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 0.6s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+
+        /* Status text styles */
+        #status, #recordingStatus, #recognizedText, #command {
+            font-weight: bold;
+        }
+
+        #status {
+            color: #58a6ff; /* Chrome accent for status */
+        }
+
+        #recordingStatus {
+            color: #ffa657; /* Warning color */
+        }
+
+        #recognizedText {
+            color: #8b949e; /* Subtle secondary text */
+        }
+
+        #command {
+            color: #39d353; /* Success color */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInText {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        button:active {
+            animation: pulse 0.3s;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        footer a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>ESP32 WebSocket Control with Voice</h1>
+    <button id="connectButton">Connect to ESP32</button>
+    <button id="voiceCommandButton">Start Voice Command</button>
+    <p id="status">Status: Disconnected</p>
+    <p id="recordingStatus">Recording: Not Active</p>
+    <p id="recognizedText">Recognized Text: None</p>
+    <p id="command">Command Sent: None</p>
+
+    <div id="textCommandSection">
+        <h2>Send Text Command</h2>
+        <input type="text" id="textCommandInput" placeholder="Enter command">
+        <button id="sendButton">Send</button>
+    </div>
+
+    <div id="guideSection">
+        <h2>Available Commands</h2>
+        <ul>
+            <li><b>Turn on/off red/green LED</b>: Activate or deactivate the specified LED.</li>
+            <li><b>Turn off LEDs</b>: Turns off all LEDs.</li>
+            <li><b>Blink red/green</b>: Makes the specified LED blink.</li>
+            <li><b>Display number [X]</b>: Displays the specified number on the display.</li>
+            <li><b>Shut down</b>: Powers off the system or stops the operation.</li>
+        </ul>
+    </div>
+    
+    <div id="comingSoon">
+        <h2>Coming Soon Features</h2>
+        <ul>
+            <li>Customizable Commands</li>
+            <li>Scheduled Actions</li>
+            <li>Multi-Language Support (Farsi, etc.)</li>
+            <li>Command History</li>
+            <li>Offline Mode</li>
+            <li>User Authentication</li>
+            <li>Third-Party API Integration</li>
+            <li>Bluetooth Support</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>Project developed by <b>Mahdi Elhaei</b>. Dedicated to enhancing ESP32 voice-controlled projects with intuitive user interfaces and powerful features.</p>
+        <p><a href="https://github.com/mahdi-png" target="_blank">my GitHub</a> | <a href="mahdielhaey@gmail.com">Contact Me</a></p>
+    </footer>
+
+
+    <script>
+        let websocket;
+        const connectButton = document.getElementById("connectButton");
+        const voiceCommandButton = document.getElementById("voiceCommandButton");
+        const sendButton = document.getElementById("sendButton");
+        const statusElement = document.getElementById("status");
+        const recordingStatusElement = document.getElementById("recordingStatus");
+        const recognizedTextElement = document.getElementById("recognizedText");
+        const commandElement = document.getElementById("command");
+        const textCommandInput = document.getElementById("textCommandInput");
+
+        connectButton.addEventListener("click", () => {
+            websocket = new WebSocket("wss://8ae2-2a01-5ec0-d000-e460-9043-9346-d577-8a17.ngrok-free.app");
+            websocket.onopen = () => {
+                statusElement.textContent = "Status: Connected";
+            };
+            websocket.onclose = () => {
+                statusElement.textContent = "Status: Disconnected";
+            };
+            websocket.onerror = (error) => {
+                console.error("WebSocket Error:", error);
+                statusElement.textContent = "Status: Error";
+            };
+            websocket.onmessage = (event) => {
+                console.log("Message from ESP32:", event.data);
+            };
+        });
+
+        voiceCommandButton.addEventListener("click", () => {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Web Speech API is not supported in this browser.");
+                return;
+            }
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "en-US";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.start();
+            recordingStatusElement.textContent = "Recording: Active";
+
+            recognition.onresult = (event) => {
+                const command = event.results[0][0].transcript.toLowerCase();
+                recognizedTextElement.textContent = `Recognized Text: ${command}`;
+                commandElement.textContent = `Command Sent: ${command}`;
+                if (websocket && websocket.readyState === WebSocket.OPEN) {
+                    websocket.send(command);
+                } else {
+                    alert("WebSocket is not connected. Please connect first.");
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Voice recognition error:", event.error);
+                alert("Voice recognition error. Please try again.");
+            };
+
+            recognition.onend = () => {
+                recordingStatusElement.textContent = "Recording: Not Active";
+            };
+        });
+
+        sendButton.addEventListener("click", () => {
+            const textCommand = textCommandInput.value.trim();
+            if (textCommand) {
+                commandElement.textContent = `Command Sent: ${textCommand}`;
+                if (websocket && websocket.readyState === WebSocket.OPEN) {
+                    websocket.send(textCommand);
+                } else {
+                    alert("WebSocket is not connected. Please connect first.");
+                }
+            } else {
+                alert("Please enter a valid command.");
+            }
+        });
+    </script>
+</body>
+</html>
+
